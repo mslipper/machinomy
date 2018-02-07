@@ -83,6 +83,11 @@ export default class ChannelContract {
     return deployed.paymentDigest(channelId, value)
   }
 
+  async canClaim (channelId: string, payment: BigNumber.BigNumber, receiver: string, signature: Signature) {
+    const deployed = await this.contract()
+    return deployed.canClaim(channelId, payment, receiver, signature.toString())
+  }
+
   private async contract (): Promise<Unidirectional.Contract> {
     if (!this._contract) {
       this._contract = await Unidirectional.contract(this.web3.currentProvider).deployed()

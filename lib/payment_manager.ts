@@ -40,16 +40,14 @@ export default class PaymentManager {
     const validPaymentValue = paymentChannel.value.lessThanOrEqualTo(payment.channelValue)
     const validSender = paymentChannel.sender === payment.sender
     const isPositive = payment.value.greaterThanOrEqualTo(new BigNumber.BigNumber(0)) && payment.price.greaterThanOrEqualTo(new BigNumber.BigNumber(0))
-    const digest = await this.channelContract.paymentDigest(paymentChannel.channelId, payment.value)
-    const signature = await this.chainManager.sign(paymentChannel.sender, digest)
-    const validSignature = payment.signature.isEqual(signature)
+    const canClaim = await this.channelContract.canClaim(payment.channelId, payment.value, payment.receiver, payment.signature)
 
     return validIncrement &&
       validChannelValue &&
       validPaymentValue &&
       validSender &&
       validChannelId &&
-      validSignature &&
+      canClaim &&
       isPositive
   }
 }
