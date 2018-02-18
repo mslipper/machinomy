@@ -42,11 +42,14 @@ exports.up = function(db, callback) {
     s: 'string',
     meta: 'string',
     contractAddress: 'string'
-  }, callback);
+  }, function() {
+    // use raw SQL here to support SERIAL column in postgres
+    db.runSql('ALTER TABLE payment ADD COLUMN id BIGSERIAL PRIMARY KEY', callback)
+  });
 };
 
 exports.down = function(db, callback) {
-  db.dropTable('payments', callback);
+  db.dropTable('payment', callback);
 };
 
 exports._meta = {
