@@ -222,6 +222,10 @@ export default class Machinomy {
     return this.channelManager.openChannels()
   }
 
+  channelById (channelId: string): Promise<PaymentChannel | null> {
+    return this.channelManager.channelById(channelId)
+  }
+
   /**
    * Share the money between sender and reciver according to payments made.
    *
