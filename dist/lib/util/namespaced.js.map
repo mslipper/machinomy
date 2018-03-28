@@ -1,0 +1,1 @@
+{"version":3,"file":"namespaced.js","sourceRoot":"","sources":["../../../lib/util/namespaced.ts"],"names":[],"mappings":";;AAAA,oBAA4B,SAAoC,EAAE,IAAY;IAC5E,IAAI,MAAM,GAAG,IAAI,CAAA;IACjB,EAAE,CAAC,CAAC,SAAS,CAAC,CAAC,CAAC;QACd,MAAM,GAAG,SAAS,GAAG,GAAG,GAAG,IAAI,CAAA;IACjC,CAAC;IACD,MAAM,CAAC,MAAM,CAAA;AACf,CAAC;AAND,gCAMC"}
