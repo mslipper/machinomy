@@ -186,9 +186,9 @@ export default class Machinomy {
     return this.channelManager.deposit(channelId, _value)
   }
 
-  async open (receiver: string, value: BigNumber.BigNumber | number): Promise<PaymentChannel> {
+  async open (receiver: string, value: BigNumber.BigNumber | number, channelId?: string): Promise<PaymentChannel> {
     const _value = new BigNumber.BigNumber(value)
-    return this.channelManager.openChannel(this.account, receiver, new BigNumber.BigNumber(0), _value)
+    return this.channelManager.openChannel(this.account, receiver, new BigNumber.BigNumber(0), _value, channelId)
   }
 
   /**
