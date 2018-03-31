@@ -5,6 +5,7 @@ import { TransactionResult } from 'truffle-contract'
 import log from './util/log'
 import Signature from './signature'
 import { Unidirectional } from '@machinomy/contracts'
+import { ChannelId } from './channel'
 
 const LOG = log('ChannelContract')
 
@@ -19,14 +20,17 @@ export default class ChannelContract {
     this.web3 = web3
   }
 
-  private static generateId (): string {
+  public static generateId (): string {
     return uuid.v4().replace(/-/g, '')
   }
 
-  async open (sender: string, receiver: string, price: BigNumber.BigNumber, settlementPeriod: number): Promise<TransactionResult> {
+  async open (sender: string, receiver: string, price: BigNumber.BigNumber, settlementPeriod: number, channelId?: ChannelId | string): Promise<TransactionResult> {
     LOG(`Creating channel. Value: ${price} / Settlement: ${settlementPeriod}`)
+
+    const cId = channelId ? channelId : ChannelContract.generateId()
+
     const deployed = await this.contract()
-    return deployed.open(ChannelContract.generateId(), receiver, settlementPeriod, {
+    return deployed.open(cId.toString(), receiver, settlementPeriod, {
       from: sender,
       value: price,
       gas: CREATE_CHANNEL_GAS
