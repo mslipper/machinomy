@@ -211,7 +211,7 @@ var ChannelManagerImpl = /** @class */ (function (_super) {
                         channelC = _a.sent();
                         channel.value = channelC[2];
                         return [2 /*return*/, channel];
-                    case 3: return [2 /*return*/, null];
+                    case 3: return [2 /*return*/, this.handleUnknownChannel(channelId)];
                 }
             });
         });
