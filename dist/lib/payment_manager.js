@@ -27,7 +27,6 @@ class PaymentManager {
     }
     async isValid(payment, paymentChannel) {
         const settlementPeriod = await this.channelContract.getSettlementPeriod(payment.channelId);
-        const validIncrement = (paymentChannel.spent.plus(payment.price)).lessThanOrEqualTo(paymentChannel.value);
         const validChannelValue = paymentChannel.value.equals(payment.channelValue);
         const validChannelId = paymentChannel.channelId === payment.channelId;
         const validPaymentValue = paymentChannel.value.lessThanOrEqualTo(payment.channelValue);
@@ -36,9 +35,8 @@ class PaymentManager {
         const canClaim = await this.channelContract.canClaim(payment.channelId, payment.value, payment.receiver, payment.signature);
         const isAboveMinSettlementPeriod = new BigNumber.BigNumber(this.options.minimumSettlementPeriod || channel_manager_1.DEFAULT_SETTLEMENT_PERIOD)
             .lessThanOrEqualTo(settlementPeriod);
-        console.log('Valid increment:', validIncrement, 'Valid channel value:', validChannelValue, 'Valid sender:', validSender, 'Valid channel ID:', validChannelId, 'Can claim:', canClaim, 'Is Positive:', isPositive, 'Is above minimum settlement period:', isAboveMinSettlementPeriod);
-        return validIncrement &&
-            validChannelValue &&
+        console.log('Valid channel value:', validChannelValue, 'Valid sender:', validSender, 'Valid channel ID:', validChannelId, 'Can claim:', canClaim, 'Is Positive:', isPositive, 'Is above minimum settlement period:', isAboveMinSettlementPeriod);
+        return validChannelValue &&
             validPaymentValue &&
             validSender &&
             validChannelId &&
