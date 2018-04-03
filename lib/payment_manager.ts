@@ -39,7 +39,6 @@ export default class PaymentManager {
 
   async isValid (payment: Payment, paymentChannel: PaymentChannel): Promise<boolean> {
     const settlementPeriod = await this.channelContract.getSettlementPeriod(payment.channelId)
-    const validIncrement = (paymentChannel.spent.plus(payment.price)).lessThanOrEqualTo(paymentChannel.value)
     const validChannelValue = paymentChannel.value.equals(payment.channelValue)
     const validChannelId = paymentChannel.channelId === payment.channelId
     const validPaymentValue = paymentChannel.value.lessThanOrEqualTo(payment.channelValue)
@@ -50,8 +49,6 @@ export default class PaymentManager {
       .lessThanOrEqualTo(settlementPeriod)
 
     console.log(
-      'Valid increment:',
-      validIncrement,
       'Valid channel value:',
       validChannelValue,
       'Valid sender:',
@@ -66,8 +63,7 @@ export default class PaymentManager {
       isAboveMinSettlementPeriod
     )
 
-    return validIncrement &&
-      validChannelValue &&
+    return validChannelValue &&
       validPaymentValue &&
       validSender &&
       validChannelId &&
