@@ -283,13 +283,43 @@ describe('ChannelManagerImpl', () => {
                     token: undefined
                 });
             });
-            channelsDao.saveOrUpdate = sinon.stub().resolves();
             deployed.channels = sinon.stub().resolves(['0', '0',
                 new BigNumber.BigNumber(10), new BigNumber.BigNumber(0), new BigNumber.BigNumber(0)]);
             return channelManager.nextPayment(id, new BigNumber.BigNumber(8), '').then((payment) => {
-                expect(channelsDao.saveOrUpdate.called).toBe(true);
                 expect(payment.value.eq(new BigNumber.BigNumber(10))).toBe(true);
                 expect(payment.price.eq(new BigNumber.BigNumber(8))).toBe(true);
+            });
+        });
+    });
+    describe('spendChannel', () => {
+        it('should save the channel in the database', () => {
+            const payment = new payment_1.default({
+                channelId: '0xdead',
+                sender: 'send',
+                receiver: 'recv',
+                price: new BigNumber.BigNumber(10),
+                value: new BigNumber.BigNumber(10),
+                channelValue: new BigNumber.BigNumber(100),
+                signature: signature_1.default.fromParts({
+                    v: 27,
+                    r: '0x01',
+                    s: '0x02'
+                }),
+                meta: '',
+                contractAddress: undefined,
+                token: undefined
+            });
+            channelsDao.saveOrUpdate = sinon.stub().resolves();
+            return channelManager.spendChannel(payment).then(() => {
+                expect(channelsDao.saveOrUpdate.calledWith({
+                    sender: 'send',
+                    receiver: 'recv',
+                    channelId: '0xdead',
+                    value: new BigNumber.BigNumber(10),
+                    spent: new BigNumber.BigNumber(10),
+                    state: undefined,
+                    contractAddress: undefined
+                }));
             });
         });
     });

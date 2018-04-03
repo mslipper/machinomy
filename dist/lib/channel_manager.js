@@ -49,11 +49,13 @@ class ChannelManagerImpl extends events_1.EventEmitter {
             if (toSpend.greaterThan(channel.value)) {
                 throw new Error(`Total spend ${toSpend.toString()} is larger than channel value ${channel.value.toString()}`);
             }
-            const payment = await this.paymentManager.buildPaymentForChannel(channel, amount, toSpend, meta);
-            const chan = payment_channel_1.PaymentChannel.fromPayment(payment);
-            await this.channelsDao.saveOrUpdate(chan);
-            return payment;
+            return this.paymentManager.buildPaymentForChannel(channel, amount, toSpend, meta);
         });
+    }
+    async spendChannel(payment) {
+        const chan = payment_channel_1.PaymentChannel.fromPayment(payment);
+        await this.channelsDao.saveOrUpdate(chan);
+        return payment;
     }
     acceptPayment(payment) {
         LOG(`Queueing payment of ${payment.price.toString()} Wei to channel with ID ${payment.channelId}.`);

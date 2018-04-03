@@ -19,6 +19,7 @@ export interface ChannelManager extends EventEmitter {
     closeChannel(channelId: string | ChannelId): Promise<TransactionResult>;
     deposit(channelId: string, value: BigNumber.BigNumber): Promise<TransactionResult>;
     nextPayment(channelId: string | ChannelId, amount: BigNumber.BigNumber, meta: string): Promise<Payment>;
+    spendChannel(payment: Payment): Promise<Payment>;
     acceptPayment(payment: Payment): Promise<string>;
     requireOpenChannel(sender: string, receiver: string, amount: BigNumber.BigNumber, minDepositAmount?: BigNumber.BigNumber): Promise<PaymentChannel>;
     channels(): Promise<PaymentChannel[]>;
@@ -43,6 +44,7 @@ export declare class ChannelManagerImpl extends EventEmitter implements ChannelM
     closeChannel(channelId: string | ChannelId): Promise<TransactionResult>;
     deposit(channelId: string, value: BigNumber.BigNumber): Promise<TransactionResult>;
     nextPayment(channelId: string | ChannelId, amount: BigNumber.BigNumber, meta: string): Promise<Payment>;
+    spendChannel(payment: Payment): Promise<Payment>;
     acceptPayment(payment: Payment): Promise<string>;
     requireOpenChannel(sender: string, receiver: string, amount: BigNumber.BigNumber, minDepositAmount?: BigNumber.BigNumber): Promise<PaymentChannel>;
     channels(): Promise<PaymentChannel[]>;

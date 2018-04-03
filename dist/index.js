@@ -89,10 +89,12 @@ class Machinomy {
         }
         const payment = await this.nextPayment(options);
         const res = await this.client.doPayment(payment, options.gateway);
+        await this.channelManager.spendChannel(payment);
         return { token: res.token, channelId: payment.channelId };
     }
     async payment(options) {
         const payment = await this.nextPayment(options);
+        await this.channelManager.spendChannel(payment);
         return { payment: payment_1.PaymentSerde.instance.serialize(payment) };
     }
     async pry(uri) {
