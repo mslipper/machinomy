@@ -188,11 +188,13 @@ class ChannelManagerImpl extends events_1.EventEmitter {
         return chan;
     }
     async findChannel(payment) {
-        const chan = await this.channelsDao.findBySenderReceiverChannelId(payment.sender, payment.receiver, payment.channelId);
+        let chan = await this.channelsDao.findBySenderReceiverChannelId(payment.sender, payment.receiver, payment.channelId);
         if (chan) {
             return chan;
         }
-        return payment_channel_1.PaymentChannel.fromPayment(payment);
+        chan = payment_channel_1.PaymentChannel.fromPayment(payment);
+        chan.spent = new BigNumber.BigNumber(0);
+        return chan;
     }
 }
 exports.ChannelManagerImpl = ChannelManagerImpl;
