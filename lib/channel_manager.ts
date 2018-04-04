@@ -125,7 +125,7 @@ export class ChannelManagerImpl extends EventEmitter implements ChannelManager {
     LOG(`Queueing payment of ${payment.price.toString()} Wei to channel with ID ${payment.channelId}.`)
 
     return this.mutex.synchronize(async () => {
-      const channel = PaymentChannel.fromPayment(payment)
+      const channel = await this.findChannel(payment)
 
       LOG(`Adding ${payment.price.toString()} Wei to channel with ID ${channel.channelId.toString()}.`)
 
@@ -144,6 +144,7 @@ export class ChannelManagerImpl extends EventEmitter implements ChannelManager {
         throw new Error('Invalid payment.')
       }
 
+      channel.spent = payment.value
       const token = this.web3.sha3(JSON.stringify(payment)).toString()
       await this.channelsDao.saveOrUpdate(channel)
       await this.tokensDao.save(token, payment.channelId)
@@ -274,5 +275,15 @@ export class ChannelManagerImpl extends EventEmitter implements ChannelManager {
     const chan = new PaymentChannel(sender, receiver, channelId, value, new BigNumber.BigNumber(0), settlingUntil.eq(0) ? 0 : 1, undefined)
     await this.channelsDao.save(chan)
     return chan
+  }
+
+  private async findChannel(payment: Payment): Promise<PaymentChannel> {
+    const chan = await this.channelsDao.findBySenderReceiverChannelId(payment.sender, payment.receiver, payment.channelId)
+
+    if (chan) {
+      return chan
+    }
+
+    return PaymentChannel.fromPayment(payment)
   }
 }
