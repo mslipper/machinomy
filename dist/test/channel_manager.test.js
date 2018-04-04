@@ -332,7 +332,7 @@ describe('ChannelManagerImpl', () => {
                 sender: '0xcafe',
                 receiver: '0xbeef',
                 price: new BigNumber.BigNumber(1),
-                value: new BigNumber.BigNumber(2),
+                value: new BigNumber.BigNumber(1),
                 channelValue: new BigNumber.BigNumber(10),
                 signature: signature_1.default.fromParts({
                     v: 27,
@@ -345,6 +345,7 @@ describe('ChannelManagerImpl', () => {
             };
             deployed.channels = sinon.stub().resolves(['0', '0',
                 new BigNumber.BigNumber(8), new BigNumber.BigNumber(0), new BigNumber.BigNumber(0)]);
+            channelsDao.findBySenderReceiverChannelId = sinon.stub().resolves(null);
         });
         it('should save the payment to the database and return the token when valid', () => {
             web3.sha3 = sinon.stub().returns('token');

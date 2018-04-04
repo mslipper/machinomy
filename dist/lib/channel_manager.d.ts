@@ -58,4 +58,5 @@ export declare class ChannelManagerImpl extends EventEmitter implements ChannelM
     private claim(channel);
     private buildChannel(sender, receiver, price, settlementPeriod, channelId?);
     private handleUnknownChannel(channelId);
+    private findChannel(payment);
 }

@@ -50,6 +50,8 @@ export default class PaymentManager {
       .lessThanOrEqualTo(settlementPeriod)
 
     console.log(
+      'Valid increment (using existing channel):',
+      validIncrement,
       'Valid channel value:',
       validChannelValue,
       'Valid sender:',
@@ -64,7 +66,8 @@ export default class PaymentManager {
       isAboveMinSettlementPeriod
     )
 
-    return validChannelValue &&
+    return validIncrement &&
+      validChannelValue &&
       validPaymentValue &&
       validSender &&
       validChannelId &&

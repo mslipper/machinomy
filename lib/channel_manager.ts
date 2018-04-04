@@ -284,11 +284,11 @@ export class ChannelManagerImpl extends EventEmitter implements ChannelManager {
     return chan
   }
 
-  private async findChannel(payment: Payment): Promise<PaymentChannel> {
+  private async findChannel (payment: Payment): Promise<PaymentChannel> {
     const chan = await this.channelsDao.findBySenderReceiverChannelId(payment.sender, payment.receiver, payment.channelId)
 
     if (chan) {
-    return chan
+      return chan
     }
 
     return PaymentChannel.fromPayment(payment)
