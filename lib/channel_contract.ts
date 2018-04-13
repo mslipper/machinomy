@@ -22,8 +22,7 @@ export default class ChannelContract {
   async open (sender: string, receiver: string, price: BigNumber.BigNumber, settlementPeriod: number, channelId?: ChannelId | string): Promise<TransactionResult> {
     LOG(`Creating channel. Value: ${price} / Settlement: ${settlementPeriod}`)
     let _channelId = channelId || ChannelId.random()
-    const deployed = await this.contract()
-    return deployed.open(_channelId.toString(), receiver, settlementPeriod, {
+    return this.callWithEstimatedGasPrice('open', _channelId.toString(), receiver, settlementPeriod, {
       from: sender,
       value: price,
       gas: CREATE_CHANNEL_GAS
@@ -33,14 +32,12 @@ export default class ChannelContract {
   async claim (receiver: string, channelId: string, value: BigNumber.BigNumber, signature: Signature): Promise<TransactionResult> {
     LOG(`Claiming channel with id ${channelId} on behalf of receiver ${receiver}`)
     LOG(`Values: ${value} / Signature: ${signature.toString()}`)
-    const deployed = await this.contract()
-    return deployed.claim(channelId, value, signature.toString(), { from: receiver })
+    return this.callWithEstimatedGasPrice('claim', channelId, value, signature.toString(), { from: receiver })
   }
 
   async deposit (sender: string, channelId: string, value: BigNumber.BigNumber): Promise<TransactionResult> {
     LOG(`Depositing ${value} into channel ${channelId}`)
-    const deployed = await this.contract()
-    return deployed.deposit(channelId, {
+    return this.callWithEstimatedGasPrice('deposit', channelId, {
       from: sender,
       value: value,
       gas: CREATE_CHANNEL_GAS
@@ -79,14 +76,12 @@ export default class ChannelContract {
 
   async startSettle (account: string, channelId: string): Promise<TransactionResult> {
     LOG(`Starting settle for account ${account} and channel id ${channelId}.`)
-    const deployed = await this.contract()
-    return deployed.startSettling(channelId, { from: account })
+    return this.callWithEstimatedGasPrice('startSettling', channelId, { from: account })
   }
 
   async finishSettle (account: string, channelId: string): Promise<TransactionResult> {
     LOG(`Finishing settle for account ${account} and channel ID ${channelId}.`)
-    const deployed = await this.contract()
-    return deployed.settle(channelId, { from: account, gas: 400000 })
+    return this.callWithEstimatedGasPrice('settle', channelId, { from: account, gas: 400000 })
   }
 
   async paymentDigest (channelId: string, value: BigNumber.BigNumber): Promise<string> {
@@ -112,5 +107,32 @@ export default class ChannelContract {
     }
 
     return this._contract
+  }
+
+  private async callWithEstimatedGasPrice (name: string, ...args: any[]) {
+    const mutArgs = args
+    const lastArg = mutArgs[mutArgs.length - 1]
+    const gasPrice = await this.getGasPrice()
+    const deployed = await this.contract() as any
+
+    if (typeof deployed[name] !== 'function') {
+      throw new Error(`${name} is not a function on the contract.`)
+    }
+
+    if (lastArg.from || lastArg.gas || lastArg.value) {
+      lastArg.gasPrice = gasPrice
+    } else {
+      mutArgs.push({
+        gasPrice
+      })
+    }
+
+    return deployed[name].apply(deployed, args)
+  }
+
+  private getGasPrice (): Promise<BigNumber.BigNumber> {
+    return new Promise((resolve, reject) => this.web3.eth.getGasPrice((err: any, data: BigNumber.BigNumber) => {
+      return err ? reject(err) : resolve(data)
+    }))
   }
 }

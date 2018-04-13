@@ -25,7 +25,12 @@ describe('ChannelContract', () => {
 
   beforeEach(() => {
     web3 = {
-      currentProvider: {}
+      currentProvider: {},
+      eth: {
+        getGasPrice (cb: (err: any, data: BigNumber.BigNumber) => void) {
+          cb(null, new BigNumber.BigNumber(1234))
+        }
+      }
     } as Web3
 
     deployed = {} as any
@@ -52,7 +57,8 @@ describe('ChannelContract', () => {
         expect(deployed.open.calledWith(ID, 'recv', 1234, {
           from: 'send',
           value: new BigNumber.BigNumber(10),
-          gas: 300000
+          gas: 300000,
+          gasPrice: new BigNumber.BigNumber(1234)
         })).toBe(true)
       })
     })
@@ -63,7 +69,8 @@ describe('ChannelContract', () => {
       deployed.claim = sinon.stub()
       return contract.claim('recv', ID, new BigNumber.BigNumber(10), SIG).then(() => {
         expect(deployed.claim.calledWith(ID, new BigNumber.BigNumber(10), SIG.toString(), {
-          from: 'recv'
+          from: 'recv',
+          gasPrice: new BigNumber.BigNumber(1234)
         })).toBe(true)
       })
     })
@@ -76,7 +83,8 @@ describe('ChannelContract', () => {
         expect(deployed.deposit.calledWith(ID, {
           from: 'send',
           value: new BigNumber.BigNumber(10),
-          gas: 300000
+          gas: 300000,
+          gasPrice: new BigNumber.BigNumber(1234)
         })).toBe(true)
       })
     })
@@ -107,7 +115,10 @@ describe('ChannelContract', () => {
       deployed.startSettling = sinon.stub()
 
       return contract.startSettle('acc', ID).then(() => {
-        expect(deployed.startSettling.calledWith(ID, { from: 'acc' })).toBe(true)
+        expect(deployed.startSettling.calledWith(ID, {
+          from: 'acc',
+          gasPrice: new BigNumber.BigNumber(1234)
+        })).toBe(true)
       })
     })
   })
@@ -117,7 +128,11 @@ describe('ChannelContract', () => {
       deployed.settle = sinon.stub()
 
       return contract.finishSettle('acc', ID).then(() => {
-        expect(deployed.settle.calledWith(ID, { from: 'acc', gas: 400000 })).toBe(true)
+        expect(deployed.settle.calledWith(ID, {
+          from: 'acc',
+          gas: 400000 ,
+          gasPrice: new BigNumber.BigNumber(1234)
+        })).toBe(true)
       })
     })
   })
